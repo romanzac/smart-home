@@ -16,6 +16,7 @@ logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %
 # Suppress InsecureRequestWarning for local development
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+
 def authenticate_controller():
     """Authenticate with the UniFi Controller and return a session object."""
     try:
@@ -23,11 +24,7 @@ def authenticate_controller():
         session.verify = False
         login_data = {"username": USERNAME, "password": PASSWORD}
         headers = {"Content-Type": "application/json"}
-        response = session.post(
-            f"https://{CONTROLLER}:443/api/auth/login",
-            json=login_data,
-            headers=headers
-        )
+        response = session.post(f"https://{CONTROLLER}:443/api/auth/login", json=login_data, headers=headers)
         logging.debug(f"Login response status: {response.status_code}")
         logging.debug(f"Login response content: {response.text}")
         if response.status_code == 200:
@@ -44,13 +41,11 @@ def authenticate_controller():
         logging.error(f"Authentication error: {e}")
         return None
 
+
 def get_device_info(session, site, mac, device_id):
     """Retrieve device information for the given device ID or MAC address."""
     try:
-        response = session.get(
-            f"https://{CONTROLLER}:443/proxy/network/api/s/{site}/stat/device",
-            headers={"Content-Type": "application/json"}
-        )
+        response = session.get(f"https://{CONTROLLER}:443/proxy/network/api/s/{site}/stat/device", headers={"Content-Type": "application/json"})
         logging.debug(f"Device list response status: {response.status_code}")
         logging.debug(f"Raw device list response: {response.text}")
         if response.status_code != 200:
@@ -71,6 +66,7 @@ def get_device_info(session, site, mac, device_id):
         logging.error(f"Error retrieving devices: {e}")
         return None
 
+
 def get_outlet_state(device, outlet_index):
     """Get the relay state of a specific outlet."""
     outlets = device.get("outlet_overrides", device.get("outlet_table", []))
@@ -79,6 +75,7 @@ def get_outlet_state(device, outlet_index):
             return outlet.get("relay_state", False)
     logging.error(f"Outlet index {outlet_index} not found in outlet table")
     return None
+
 
 def control_outlet(session, device_id, site, outlet_index, action):
     """Control a specific outlet on the USP-Strip using PUT with the provided payload structure."""
@@ -100,10 +97,7 @@ def control_outlet(session, device_id, site, outlet_index, action):
         logging.debug(f"Sending payload: {json.dumps(payload, indent=2)}")
         endpoint = f"/proxy/network/api/s/{site}/rest/device/{device_id}"
         response = session.put(
-            f"https://{CONTROLLER}:443{endpoint}",
-            data=json.dumps(payload),
-            headers={"Content-Type": "application/json"},
-            verify=False
+            f"https://{CONTROLLER}:443{endpoint}", data=json.dumps(payload), headers={"Content-Type": "application/json"}, verify=False
         )
         logging.debug(f"Outlet control response status: {response.status_code}")
         logging.debug(f"Outlet control response: {response.text}")
@@ -117,6 +111,7 @@ def control_outlet(session, device_id, site, outlet_index, action):
         logging.error(f"Error controlling outlet: {e}")
         return False
 
+
 def verify_outlet_state(session, site, mac, device_id, outlet_index, desired_state):
     """Verify the outlet state after control command."""
     device = get_device_info(session, site, mac, device_id)
@@ -129,24 +124,15 @@ def verify_outlet_state(session, site, mac, device_id, outlet_index, desired_sta
     logging.info(f"Current outlet {outlet_index} state: {'on' if current_state else 'off'}")
     return current_state == desired_state
 
+
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(
-        description="Control outlets on a UniFi SmartPower Strip (USP-Strip).",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        description="Control outlets on a UniFi SmartPower Strip (USP-Strip).", formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
+    parser.add_argument("-i", "--index", type=int, default=2, help="Outlet index to control (1-7)")
     parser.add_argument(
-        "-i", "--index",
-        type=int,
-        default=2,
-        help="Outlet index to control (1-7)"
-    )
-    parser.add_argument(
-        "-a", "--action",
-        type=str,
-        default="on",
-        choices=["on", "off", "cycle"],
-        help="Action to perform on the outlet (on, off, or cycle)"
+        "-a", "--action", type=str, default="on", choices=["on", "off", "cycle"], help="Action to perform on the outlet (on, off, or cycle)"
     )
     args = parser.parse_args()
 
@@ -182,6 +168,7 @@ def main():
         logging.info(f"Outlet {args.index} turned {args.action} successfully.")
     else:
         logging.error(f"Failed to turn outlet {args.index} {args.action}.")
+
 
 if __name__ == "__main__":
     main()

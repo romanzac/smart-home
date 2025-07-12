@@ -20,4 +20,3 @@ DEVICE_ID = get_env_var("DEVICE_ID", "None")
 
 USERNAME = get_env_var("USERNAME", "None")
 PASSWORD = get_env_var("PASSWORD", "None")
-
