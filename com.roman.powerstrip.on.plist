@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.roman.powerstrip.on</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/roman/powerstrip/.venv/bin/python</string>
+        <string>/Users/roman/powerstrip/powerstrip.py</string>
+        <string>-i</string>
+        <string>2</string>
+        <string>-a</string>
+        <string>on</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>22</integer> <!-- 10 PM -->
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>RunAtLoad</key>
+    <false/> <!-- Do not run immediately on load -->
+    <key>StandardOutPath</key>
+    <string>/Users/roman/powerstrip/powerstrip_on.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/roman/powerstrip/powerstrip_on.log</string>
+</dict>
+</plist>
